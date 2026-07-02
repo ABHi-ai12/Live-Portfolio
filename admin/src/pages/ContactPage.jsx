@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useFirestoreDocument } from '../hooks/useFirestoreDocument';
-import { collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc, limit } from 'firebase/firestore';
 import { firestore } from '../lib/firebase';
 import { Save, Loader2, Mail, Check, Trash2, Archive, MessageSquare } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { PageSkeleton } from '../components/PageSkeleton';
+import { Skeleton } from '../components/Skeleton';
 
 const defaultContactSettings = {
   email: '',
@@ -38,6 +40,7 @@ export default function ContactPage() {
   const [loadingMessages, setLoadingMessages] = useState(true);
   const [filter, setFilter] = useState('All'); // All, Unread, Read
   const [searchTerm, setSearchTerm] = useState('');
+  const [messageLimit, setMessageLimit] = useState(15);
 
   // Sync settings
   useEffect(() => {
@@ -48,7 +51,7 @@ export default function ContactPage() {
 
   // Fetch Inbox
   useEffect(() => {
-    const q = query(collection(firestore, 'contact_messages'), orderBy('createdAt', 'desc'));
+    const q = query(collection(firestore, 'contact_messages'), orderBy('createdAt', 'desc'), limit(messageLimit));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const msgs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
       setMessages(msgs);
@@ -58,7 +61,7 @@ export default function ContactPage() {
       setLoadingMessages(false);
     });
     return () => unsubscribe();
-  }, []);
+  }, [messageLimit]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -116,6 +119,10 @@ export default function ContactPage() {
   });
 
   const unreadCount = messages.filter(m => m.status === 'Unread').length;
+
+  if (settingsLoading && loadingMessages) {
+    return <PageSkeleton type="contact" />;
+  }
 
   return (
     <div className="max-w-5xl mx-auto space-y-6 pb-20">
@@ -177,7 +184,23 @@ export default function ContactPage() {
 
           <div className="space-y-4">
             {loadingMessages ? (
-              <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-zinc-500" /></div>
+              <div className="space-y-4">
+                {[...Array(3)].map((_, idx) => (
+                  <div key={idx} className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 space-y-4 animate-pulse">
+                    <div className="flex justify-between items-start">
+                      <div className="space-y-2 flex-1">
+                        <Skeleton className="h-5 w-48 bg-zinc-800" />
+                        <Skeleton className="h-4 w-32 bg-zinc-800/60" />
+                      </div>
+                      <div className="flex gap-2">
+                        <Skeleton className="h-8 w-16 bg-zinc-800/60 rounded-lg" />
+                        <Skeleton className="h-8 w-8 bg-zinc-800/60 rounded-lg" />
+                      </div>
+                    </div>
+                    <Skeleton className="h-16 w-full bg-zinc-800/40 rounded-xl" />
+                  </div>
+                ))}
+              </div>
             ) : filteredMessages.length === 0 ? (
               <div className="text-center py-16 bg-zinc-900 border border-zinc-800 rounded-xl">
                 <MessageSquare className="w-12 h-12 text-zinc-600 mx-auto mb-4" />
@@ -227,6 +250,16 @@ export default function ContactPage() {
                 ))}
               </AnimatePresence>
             )}
+            {messages.length >= messageLimit && (
+              <div className="flex justify-center pt-4">
+                <button
+                  onClick={() => setMessageLimit(prev => prev + 15)}
+                  className="px-6 py-2 bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-zinc-300 hover:text-white rounded-xl text-xs font-semibold uppercase tracking-wider transition-colors cursor-pointer"
+                >
+                  Load More Messages
+                </button>
+              </div>
+            )}
           </div>
 
         </motion.div>
@@ -253,8 +286,31 @@ export default function ContactPage() {
             </div>
           )}
 
-          {settingsLoading ? (
-            <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-red-500" /></div>
+           {settingsLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-pulse">
+              <div className="p-6 bg-zinc-900 border border-zinc-800 rounded-2xl space-y-4">
+                <Skeleton className="h-6 w-32 bg-zinc-800" />
+                <div className="space-y-4">
+                  {[...Array(3)].map((_, i) => (
+                    <div key={i} className="space-y-2">
+                      <Skeleton className="h-4 w-16 bg-zinc-800" />
+                      <Skeleton className="h-10 w-full bg-zinc-850 rounded-lg" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="p-6 bg-zinc-900 border border-zinc-800 rounded-2xl space-y-4">
+                <Skeleton className="h-6 w-32 bg-zinc-800" />
+                <div className="space-y-4">
+                  {[...Array(3)].map((_, i) => (
+                    <div key={i} className="space-y-2">
+                      <Skeleton className="h-4 w-16 bg-zinc-800" />
+                      <Skeleton className="h-10 w-full bg-zinc-850 rounded-lg" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               

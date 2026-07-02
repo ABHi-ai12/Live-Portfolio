@@ -4,6 +4,7 @@ import { doc } from 'firebase/firestore';
 import { firestore } from '../lib/firebase';
 import { Plus, Trash2, Save, Loader2, GripVertical, Code2 } from 'lucide-react';
 import { motion, Reorder } from 'framer-motion';
+import { PageSkeleton } from '../components/PageSkeleton';
 
 const defaultSkillData = { items: [] };
 const categories = ['Frontend', 'Backend', 'Database', 'DevOps', 'Languages', 'Tools', 'Design'];
@@ -66,11 +67,7 @@ export default function SkillsPage() {
   };
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-red-500" />
-      </div>
-    );
+    return <PageSkeleton type="skills" />;
   }
 
   return (

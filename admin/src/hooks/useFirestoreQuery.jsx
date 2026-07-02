@@ -13,7 +13,14 @@ export function useFirestoreQuery(cacheKey, queryFactory) {
     }
   });
   
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => {
+    try {
+      const cached = localStorage.getItem(`firestore_cache_${cacheKey}`);
+      return cached ? false : true;
+    } catch {
+      return true;
+    }
+  });
   const [error, setError] = useState(null);
   const [isOffline, setIsOffline] = useState(false);
   const [retryCount, setRetryCount] = useState(0);

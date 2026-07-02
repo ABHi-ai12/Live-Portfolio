@@ -5,6 +5,7 @@ import { doc } from 'firebase/firestore';
 import { firestore } from '../lib/firebase';
 import { Loader2, Save, UploadCloud, User, Plus, Trash2, GripVertical } from 'lucide-react';
 import { motion, Reorder } from 'framer-motion';
+import { PageSkeleton } from '../components/PageSkeleton';
 
 const defaultAboutData = {
   profilePhoto: '',
@@ -97,11 +98,7 @@ export default function AboutPage() {
   };
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-red-500" />
-      </div>
-    );
+    return <PageSkeleton type="about" />;
   }
 
   return (
