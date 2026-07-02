@@ -1,21 +1,30 @@
 {
-  "name": "video_portfolio",
+  "name": "abhi-arya",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build:main": "vite build",
+    "build": "node build.js",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.1",
     "@tailwindcss/vite": "^4.3.0",
     "aos": "^2.3.4",
+    "firebase": "^12.15.0",
     "framer-motion": "^12.40.0",
+    "gsap": "^3.15.0",
+    "lucide-react": "^1.23.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
-    "tailwindcss": "^4.3.0"
+    "react-router-dom": "^7.18.1",
+    "resend": "^6.16.0",
+    "tailwindcss": "^4.3.0",
+    "three": "^0.185.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
