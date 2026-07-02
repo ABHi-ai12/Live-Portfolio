@@ -90,7 +90,7 @@ export default async function handler(req, res) {
   let messageId = null;
 
   try {
-    // 3. Save submission to Firestore first with emailStatus: "pending", wrapped in 10s timeout
+    // 3. Save submission to Firestore first with pending statuses, wrapped in 10s timeout
     console.log('3. [Firestore Write] Attempting write to Firestore...');
     const docRef = await withTimeout(
       addDoc(collection(firestore, 'contact_messages'), {
@@ -105,7 +105,9 @@ export default async function handler(req, res) {
         createdAt: new Date().toISOString(),
         status: 'Unread',
         isArchived: false,
-        emailStatus: 'pending'
+        adminEmailStatus: 'pending',
+        autoReplyStatus: 'pending',
+        visitorEmailStatus: 'pending' // dual-tracking for compatibility
       }),
       10000
     );
@@ -118,19 +120,25 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: isTimeout ? 'Database write timed out.' : 'Failed to save contact message to database.' });
   }
 
-  // 4. Send email notification using Resend
+  // 4. Send emails sequentially if Resend is configured
   if (!resend) {
     console.warn('4. [Resend API Skipped] RESEND_API_KEY is not configured on this server.');
     try {
-      await updateDoc(doc(firestore, 'contact_messages', messageId), { emailStatus: 'failed' });
+      await updateDoc(doc(firestore, 'contact_messages', messageId), {
+        adminEmailStatus: 'failed',
+        autoReplyStatus: 'failed',
+        visitorEmailStatus: 'failed'
+      });
     } catch (updateErr) {
-      console.error('Failed to update emailStatus to failed in Firestore:', updateErr);
+      console.error('Failed to update email statuses to failed in Firestore:', updateErr);
     }
     return res.status(202).json({
       success: true,
-      emailStatus: 'failed',
+      adminEmailStatus: 'failed',
+      autoReplyStatus: 'failed',
+      visitorEmailStatus: 'failed',
       messageId,
-      message: 'Message received. Notification email could not be sent (missing API key).'
+      message: 'Message received. Notification emails could not be sent (missing API key).'
     });
   }
 
@@ -141,70 +149,122 @@ export default async function handler(req, res) {
   const safeSubject = escapeHtml(subject);
   const safeMessage = escapeHtml(message);
 
-  const emailPayload = {
-    from: fromAddress,
-    to: notificationTo,
-    subject: safeSubject ? `Portfolio: ${safeSubject}` : `New Portfolio Message from ${safeFirstName} ${safeLastName}`.trim(),
-    html: `
-      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e4e4e7; border-radius: 8px;">
-        <h2 style="color: #ff2a2a; margin-top: 0;">New Contact Form Submission</h2>
-        <hr style="border: 0; border-top: 1px solid #e4e4e7; margin: 20px 0;" />
-        <p><strong>Name:</strong> ${safeFirstName} ${safeLastName}</p>
-        <p><strong>Email:</strong> <a href="mailto:${safeEmail}">${safeEmail}</a></p>
-        ${phone ? `<p><strong>Phone:</strong> ${safePhone}</p>` : ''}
-        ${subject ? `<p><strong>Subject:</strong> ${safeSubject}</p>` : ''}
-        <p><strong>Message:</strong></p>
-        <div style="white-space: pre-wrap; background: #f4f4f5; padding: 16px; border-radius: 6px; border: 1px solid #e4e4e7; color: #18181b; line-height: 1.6;">${safeMessage}</div>
-        <hr style="border: 0; border-top: 1px solid #e4e4e7; margin: 20px 0;" />
-        <p style="font-size: 12px; color: #71717a; text-align: center; margin-bottom: 0;">This email was sent automatically from your portfolio site contact form.</p>
-      </div>
-    `
-  };
+  let adminEmailStatus = 'pending';
+  let autoReplyStatus = 'pending';
 
-  console.log(`4. [Resend Request] Sending email via Resend to: ${notificationTo}`);
-
+  // --- Email 1: Admin Notification ---
   try {
-    // Call Resend with a strict 10 second timeout limit
-    const response = await withTimeout(resend.emails.send(emailPayload), 10000);
-    const { data, error } = response || {};
+    const adminEmailPayload = {
+      from: fromAddress,
+      to: notificationTo,
+      subject: `New Portfolio Contact Form Submission`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e4e4e7; border-radius: 8px;">
+          <h2 style="color: #ff2a2a; margin-top: 0;">New Contact Form Submission</h2>
+          <hr style="border: 0; border-top: 1px solid #e4e4e7; margin: 20px 0;" />
+          <p><strong>Name:</strong> ${safeFirstName} ${safeLastName}</p>
+          <p><strong>Email:</strong> <a href="mailto:${safeEmail}">${safeEmail}</a></p>
+          ${phone ? `<p><strong>Phone:</strong> ${safePhone}</p>` : ''}
+          ${subject ? `<p><strong>Subject:</strong> ${safeSubject}</p>` : ''}
+          <p><strong>Message:</strong></p>
+          <div style="white-space: pre-wrap; background: #f4f4f5; padding: 16px; border-radius: 6px; border: 1px solid #e4e4e7; color: #18181b; line-height: 1.6;">${safeMessage}</div>
+          <hr style="border: 0; border-top: 1px solid #e4e4e7; margin: 20px 0;" />
+          <p style="font-size: 12px; color: #71717a; text-align: center; margin-bottom: 0;">This email was sent automatically from your portfolio site contact form.</p>
+        </div>
+      `
+    };
 
-    console.log('4. [Resend Response]', { data, error });
+    console.log(`4. [Admin Email Request] Sending email via Resend to admin: ${notificationTo}`);
+    const adminResponse = await withTimeout(resend.emails.send(adminEmailPayload), 10000);
+    const { data, error } = adminResponse || {};
 
     if (error) {
       throw error;
     }
 
-    // Email successfully sent: update status in Firestore
-    console.log('5. [Updating Status] Setting emailStatus: "sent" in Firestore...');
-    await updateDoc(doc(firestore, 'contact_messages', messageId), {
-      emailStatus: 'sent'
-    });
+    adminEmailStatus = 'sent';
+    console.log('4. [Admin Email Success]', { data });
+  } catch (adminError) {
+    adminEmailStatus = 'failed';
+    const isTimeout = adminError.message === 'TIMEOUT';
+    console.error(`4. [Admin Email Failed] ${isTimeout ? 'Request timed out after 10s' : 'Resend returned error'}:`, adminError);
+  }
 
-    console.log('6. [Completion] Contact submission complete and email sent.');
-    return res.status(200).json({ success: true, emailStatus: 'sent', messageId });
-  } catch (resendError) {
-    const isTimeout = resendError.message === 'TIMEOUT';
-    console.error(`4. [Resend Failed] ${isTimeout ? 'Request timed out after 10s' : 'Resend returned error'}:`, resendError);
+  // --- Email 2: Auto Reply to Visitor ---
+  try {
+    const autoReplyPayload = {
+      from: fromAddress,
+      to: email.trim(),
+      subject: `Thank you for contacting Abhinav Arya`,
+      html: `
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 30px; background-color: #09090b; border: 1px solid #27272a; border-radius: 12px; color: #f4f4f5;">
+          <h2 style="color: #ff2a2a; margin-top: 0; font-size: 24px; border-bottom: 2px solid #ff2a2a; padding-bottom: 10px;">Hi ${safeFirstName},</h2>
+          <p style="line-height: 1.6; font-size: 16px; margin-top: 20px;">
+            Thank you for reaching out through my portfolio website.
+          </p>
+          <p style="line-height: 1.6; font-size: 16px;">
+            I have successfully received your message and appreciate your interest. I will review your inquiry and get back to you within <strong>48 hours</strong>.
+          </p>
+          <p style="line-height: 1.6; font-size: 16px;">
+            If your inquiry is urgent, you can also connect with me through my LinkedIn or GitHub.
+          </p>
+          <div style="margin: 30px 0;">
+            <a href="https://abhinavarya.in" style="display: inline-block; background-color: #ff2a2a; color: #ffffff; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px; margin-right: 10px;">Visit Portfolio</a>
+            <a href="https://github.com/ABHi-ai12" style="display: inline-block; background-color: #27272a; color: #f4f4f5; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px; border: 1px solid #3f3f46;">GitHub Profile</a>
+          </div>
+          <p style="line-height: 1.6; font-size: 16px;">
+            Thank you for your patience, and I look forward to speaking with you.
+          </p>
+          <hr style="border: 0; border-top: 1px solid #27272a; margin: 30px 0;" />
+          <p style="margin-bottom: 5px; font-size: 16px;">Best regards,</p>
+          <p style="margin-top: 0; font-size: 18px; font-weight: bold; color: #ff2a2a;">Abhinav Arya</p>
+          <p style="font-size: 12px; color: #71717a; margin-top: 20px;">This is an automated response confirming receipt of your message.</p>
+        </div>
+      `
+    };
 
-    // Keep Firestore record, but update status to failed
-    try {
-      console.log('5. [Updating Status] Setting emailStatus: "failed" in Firestore due to email failure...');
-      await updateDoc(doc(firestore, 'contact_messages', messageId), {
-        emailStatus: 'failed'
-      });
-    } catch (updateErr) {
-      console.error('Failed to update emailStatus to failed in Firestore:', updateErr);
+    console.log(`5. [Auto-Reply Request] Sending email via Resend to visitor: ${email.trim()}`);
+    const autoResponse = await withTimeout(resend.emails.send(autoReplyPayload), 10000);
+    const { data, error } = autoResponse || {};
+
+    if (error) {
+      throw error;
     }
 
-    console.log('6. [Completion] Contact submission saved but email failed.');
-    return res.status(202).json({
-      success: true,
-      emailStatus: 'failed',
-      messageId,
-      message: isTimeout
-        ? 'Message received, but the notification email timed out.'
-        : 'Message received, but the notification email could not be sent.'
-    });
+    autoReplyStatus = 'sent';
+    console.log('5. [Auto-Reply Success]', { data });
+  } catch (autoError) {
+    autoReplyStatus = 'failed';
+    const isTimeout = autoError.message === 'TIMEOUT';
+    console.error(`5. [Auto-Reply Failed] ${isTimeout ? 'Request timed out after 10s' : 'Resend returned error'}:`, autoError);
   }
+
+  // 5. Update statuses in Firestore
+  try {
+    console.log('6. [Updating Statuses] Saving email statuses in Firestore...');
+    await updateDoc(doc(firestore, 'contact_messages', messageId), {
+      adminEmailStatus,
+      autoReplyStatus,
+      visitorEmailStatus: autoReplyStatus // dual-tracking for compatibility
+    });
+    console.log('6. [Updating Statuses Success]');
+  } catch (updateErr) {
+    console.error('Failed to update email statuses in Firestore:', updateErr);
+  }
+
+  // 6. Return response
+  const bothSent = adminEmailStatus === 'sent' && autoReplyStatus === 'sent';
+  console.log(`7. [Completion] Handled submission. Admin: ${adminEmailStatus}, Auto-Reply: ${autoReplyStatus}`);
+  
+  return res.status(bothSent ? 200 : 202).json({
+    success: true,
+    adminEmailStatus,
+    autoReplyStatus,
+    visitorEmailStatus: autoReplyStatus,
+    messageId,
+    message: bothSent
+      ? 'Message received and both notification emails sent successfully.'
+      : 'Message received. One or more notification emails failed to send.'
+  });
 }
 
