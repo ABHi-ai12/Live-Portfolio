@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useFirestoreDocument } from '../hooks/useFirestoreDocument';
-import { useStorage } from '../hooks/useStorage';
+
 import { doc } from 'firebase/firestore';
 import { firestore } from '../lib/firebase';
 import { Loader2, Save, UploadCloud, User, Plus, Trash2, GripVertical } from 'lucide-react';
@@ -25,7 +25,6 @@ export default function AboutPage() {
     defaultAboutData
   );
   
-  const { uploadFile, uploading } = useStorage();
   const [formData, setFormData] = useState(defaultAboutData);
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -42,20 +41,6 @@ export default function AboutPage() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleFileUpload = async (e, field) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    try {
-      const path = `about/${field}_${Date.now()}_${file.name}`;
-      const url = await uploadFile(file, path);
-      setFormData(prev => ({ ...prev, [field]: url }));
-    } catch (err) {
-      console.error(`Error uploading ${field}:`, err);
-      alert(`Failed to upload ${field}.`);
-    }
   };
 
   const handleSubmit = async (e) => {
@@ -110,7 +95,7 @@ export default function AboutPage() {
         </div>
         <button
           onClick={handleSubmit}
-          disabled={isSaving || uploading}
+          disabled={isSaving}
           className="flex items-center gap-2 px-4 py-2 bg-white text-black rounded-lg font-medium hover:bg-zinc-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
@@ -132,40 +117,32 @@ export default function AboutPage() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-zinc-400 mb-2">About Profile Photo</label>
-              <div className="flex items-center gap-4">
-                {formData.profilePhoto ? (
-                  <img src={formData.profilePhoto} alt="Profile" className="w-16 h-16 rounded-xl object-cover border-2 border-zinc-700" />
-                ) : (
-                  <div className="w-16 h-16 rounded-xl bg-zinc-800 flex items-center justify-center border-2 border-zinc-700 border-dashed">
-                    <User className="w-6 h-6 text-zinc-500" />
-                  </div>
+              <label className="block text-sm font-medium text-zinc-400 mb-2">About Profile Photo URL</label>
+              <div className="space-y-4">
+                <input
+                  type="text"
+                  name="profilePhoto"
+                  value={formData.profilePhoto}
+                  onChange={handleChange}
+                  className="w-full bg-black border border-zinc-800 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-red-500 transition-colors"
+                  placeholder="https://..."
+                />
+                {formData.profilePhoto && !formData.profilePhoto.startsWith('/src/') && (
+                  <img src={formData.profilePhoto} alt="Profile Preview" className="w-16 h-16 rounded-xl object-cover border-2 border-zinc-700" />
                 )}
-                <label className="cursor-pointer px-4 py-2 bg-zinc-800 text-sm font-medium rounded-lg hover:bg-zinc-700 transition-colors flex items-center gap-2">
-                  <UploadCloud className="w-4 h-4" />
-                  Upload Image
-                  <input type="file" accept="image/*" className="hidden" onChange={(e) => handleFileUpload(e, 'profilePhoto')} />
-                </label>
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-zinc-400 mb-2">Resume PDF</label>
-              <div className="flex items-center gap-4">
-                <input
-                  type="text"
-                  name="resumeUrl"
-                  value={formData.resumeUrl}
-                  onChange={handleChange}
-                  className="flex-1 bg-black border border-zinc-800 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-red-500 transition-colors"
-                  placeholder="https://..."
-                />
-                <label className="cursor-pointer px-4 py-2 bg-zinc-800 text-sm font-medium rounded-lg hover:bg-zinc-700 transition-colors flex items-center gap-2 shrink-0">
-                  <UploadCloud className="w-4 h-4" />
-                  Upload PDF
-                  <input type="file" accept="application/pdf" className="hidden" onChange={(e) => handleFileUpload(e, 'resumeUrl')} />
-                </label>
-              </div>
+              <label className="block text-sm font-medium text-zinc-400 mb-2">Resume PDF URL</label>
+              <input
+                type="text"
+                name="resumeUrl"
+                value={formData.resumeUrl}
+                onChange={handleChange}
+                className="w-full bg-black border border-zinc-800 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-red-500 transition-colors"
+                placeholder="https://..."
+              />
             </div>
             
             <div className="md:col-span-2">
@@ -229,6 +206,56 @@ export default function AboutPage() {
               </Reorder.Item>
             ))}
              {(!formData.education || formData.education.length === 0) && <p className="text-zinc-500 text-sm text-center py-4">No education added yet.</p>}
+          </Reorder.Group>
+        </section>
+
+        {/* Achievements Timeline */}
+        <section className="p-6 bg-zinc-900 border border-zinc-800 rounded-2xl space-y-6">
+          <div className="flex justify-between items-center border-b border-zinc-800 pb-3">
+            <h2 className="text-lg font-semibold text-white">Achievements</h2>
+            <button type="button" onClick={() => addArrayItem('achievements', { title: '', date: '', description: '' })} className="flex items-center gap-1 text-sm text-red-400 hover:text-red-300">
+              <Plus className="w-4 h-4" /> Add Achievement
+            </button>
+          </div>
+          
+          <Reorder.Group axis="y" values={formData.achievements || []} onReorder={(val) => setFormData(p => ({...p, achievements: val}))} className="space-y-4">
+            {(formData.achievements || []).map((ach) => (
+              <Reorder.Item key={ach.id} value={ach} className="flex gap-4 p-4 bg-black border border-zinc-800 rounded-xl relative group">
+                <div className="cursor-grab active:cursor-grabbing text-zinc-500 hover:text-white pt-2"><GripVertical className="w-5 h-5" /></div>
+                <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <input type="text" placeholder="Title" value={ach.title} onChange={(e) => updateArrayItem('achievements', ach.id, 'title', e.target.value)} className="bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-white text-sm" />
+                  <input type="text" placeholder="Date (e.g. 2023)" value={ach.date} onChange={(e) => updateArrayItem('achievements', ach.id, 'date', e.target.value)} className="bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-white text-sm" />
+                  <textarea placeholder="Description" rows="1" value={ach.description} onChange={(e) => updateArrayItem('achievements', ach.id, 'description', e.target.value)} className="md:col-span-2 bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-white text-sm" />
+                </div>
+                <button type="button" onClick={() => removeArrayItem('achievements', ach.id)} className="text-zinc-500 hover:text-red-500 pt-2"><Trash2 className="w-5 h-5" /></button>
+              </Reorder.Item>
+            ))}
+             {(!formData.achievements || formData.achievements.length === 0) && <p className="text-zinc-500 text-sm text-center py-4">No achievements added yet.</p>}
+          </Reorder.Group>
+        </section>
+
+        {/* Certificates Timeline */}
+        <section className="p-6 bg-zinc-900 border border-zinc-800 rounded-2xl space-y-6">
+          <div className="flex justify-between items-center border-b border-zinc-800 pb-3">
+            <h2 className="text-lg font-semibold text-white">Certificates</h2>
+            <button type="button" onClick={() => addArrayItem('certificates', { name: '', issuer: '', date: '' })} className="flex items-center gap-1 text-sm text-red-400 hover:text-red-300">
+              <Plus className="w-4 h-4" /> Add Certificate
+            </button>
+          </div>
+          
+          <Reorder.Group axis="y" values={formData.certificates || []} onReorder={(val) => setFormData(p => ({...p, certificates: val}))} className="space-y-4">
+            {(formData.certificates || []).map((cert) => (
+              <Reorder.Item key={cert.id} value={cert} className="flex gap-4 p-4 bg-black border border-zinc-800 rounded-xl relative group">
+                <div className="cursor-grab active:cursor-grabbing text-zinc-500 hover:text-white pt-2"><GripVertical className="w-5 h-5" /></div>
+                <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <input type="text" placeholder="Certificate Name" value={cert.name} onChange={(e) => updateArrayItem('certificates', cert.id, 'name', e.target.value)} className="bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-white text-sm" />
+                  <input type="text" placeholder="Issuer" value={cert.issuer} onChange={(e) => updateArrayItem('certificates', cert.id, 'issuer', e.target.value)} className="bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-white text-sm" />
+                  <input type="text" placeholder="Date (e.g. 2024)" value={cert.date} onChange={(e) => updateArrayItem('certificates', cert.id, 'date', e.target.value)} className="bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-white text-sm" />
+                </div>
+                <button type="button" onClick={() => removeArrayItem('certificates', cert.id)} className="text-zinc-500 hover:text-red-500 pt-2"><Trash2 className="w-5 h-5" /></button>
+              </Reorder.Item>
+            ))}
+             {(!formData.certificates || formData.certificates.length === 0) && <p className="text-zinc-500 text-sm text-center py-4">No certificates added yet.</p>}
           </Reorder.Group>
         </section>
 

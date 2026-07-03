@@ -82,6 +82,7 @@ export function useFirestoreQuery(cacheKey, queryFactory) {
 
     try {
       const q = queryFactoryRef.current();
+      console.log(`📡 [Admin Firestore Query] Setting up query listener for: ${cacheKey}`);
       unsubscribe = onSnapshot(
         q, 
         (snapshot) => {
@@ -92,6 +93,7 @@ export function useFirestoreQuery(cacheKey, queryFactory) {
             size: snapshot.size,
             items: snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
           };
+          console.log(`📥 [Admin Firestore Query] Received query snapshot for: ${cacheKey}. Count: ${snapshot.size}`);
           
           setData(parsedData);
           setRetryCount(0);
@@ -106,6 +108,7 @@ export function useFirestoreQuery(cacheKey, queryFactory) {
           }
         }, 
         (err) => {
+          console.error(`❌ [Admin Firestore Query] Error listening to query for: ${cacheKey}`, err);
           handleError(err);
         }
       );
@@ -115,7 +118,10 @@ export function useFirestoreQuery(cacheKey, queryFactory) {
 
     return () => {
       isMounted = false;
-      if (unsubscribe) unsubscribe();
+      if (unsubscribe) {
+        console.log(`🔌 [Admin Firestore Query] Unsubscribing query listener for: ${cacheKey}`);
+        unsubscribe();
+      }
       clearTimeout(timeoutId);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps

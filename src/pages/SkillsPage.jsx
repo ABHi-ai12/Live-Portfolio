@@ -26,6 +26,7 @@ const SkillsPage = () => {
   }, []);
 
   const getLevelPercentage = (level) => {
+    if (typeof level === 'string' && level.endsWith('%')) return level;
     const l = level?.toLowerCase();
     if (l === 'expert') return '90%';
     if (l === 'advanced') return '75%';
@@ -35,12 +36,12 @@ const SkillsPage = () => {
 
   const getCategoryIcon = (category) => {
     const c = category?.toLowerCase();
-    if (c.includes('front')) return <Layers className="w-5 h-5 text-[#ff2a2a]" />;
-    if (c.includes('back')) return <Terminal className="w-5 h-5 text-[#ff2a2a]" />;
-    if (c.includes('data')) return <Database className="w-5 h-5 text-[#ff2a2a]" />;
-    if (c.includes('devops') || c.includes('cloud')) return <Cloud className="w-5 h-5 text-[#ff2a2a]" />;
-    if (c.includes('language')) return <Languages className="w-5 h-5 text-[#ff2a2a]" />;
-    return <Cpu className="w-5 h-5 text-[#ff2a2a]" />;
+    if (c.includes('front')) return <Layers className="w-5 h-5 text-[var(--theme-color)]" />;
+    if (c.includes('back')) return <Terminal className="w-5 h-5 text-[var(--theme-color)]" />;
+    if (c.includes('data')) return <Database className="w-5 h-5 text-[var(--theme-color)]" />;
+    if (c.includes('devops') || c.includes('cloud')) return <Cloud className="w-5 h-5 text-[var(--theme-color)]" />;
+    if (c.includes('language')) return <Languages className="w-5 h-5 text-[var(--theme-color)]" />;
+    return <Cpu className="w-5 h-5 text-[var(--theme-color)]" />;
   };
 
   // Group skills by category
@@ -95,7 +96,7 @@ const SkillsPage = () => {
       <section className="bg-black py-20 px-6 md:px-12 w-full border-b border-zinc-900">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-12">
           <div className="space-y-3">
-            <span className="text-xs font-mono uppercase tracking-[0.2em] text-[#ff2a2a] font-bold">
+            <span className="text-xs font-mono uppercase tracking-[0.2em] text-[var(--theme-color)] font-bold">
               // Certifications & Standards
             </span>
             <h2 className="text-2xl md:text-3xl font-black text-white uppercase tracking-tight">
@@ -107,7 +108,7 @@ const SkillsPage = () => {
           </div>
           <div className="flex gap-4">
             <div className="px-6 py-4 bg-zinc-950 border border-zinc-900 rounded-2xl flex items-center gap-3">
-              <Sparkles className="w-5 h-5 text-[#ff2a2a]" />
+              <Sparkles className="w-5 h-5 text-[var(--theme-color)]" />
               <span className="text-sm font-semibold uppercase tracking-wider">AWS Solutions Architect</span>
             </div>
           </div>
@@ -157,11 +158,11 @@ const SkillCard = ({ category, list, catIdx, getCategoryIcon, getLevelPercentage
       onMouseLeave={handleMouseLeave}
     >
       {/* Top hover glow */}
-      <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-[#ff2a2a]/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-[var(--theme-color)]/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       
       <div className="flex items-center gap-3 border-b border-zinc-800/80 pb-4 mb-6">
         {getCategoryIcon(category)}
-        <h3 className="text-xs font-mono uppercase tracking-[0.2em] text-[#ff2a2a] font-bold">
+        <h3 className="text-xs font-mono uppercase tracking-[0.2em] text-[var(--theme-color)] font-bold">
           // {category}
         </h3>
       </div>
@@ -185,7 +186,7 @@ const SkillCard = ({ category, list, catIdx, getCategoryIcon, getLevelPercentage
                 whileInView={{ width: getLevelPercentage(skill.level) }}
                 viewport={{ once: true }}
                 transition={{ duration: 1.2, ease: "easeOut", delay: idx * 0.08 }}
-                className="h-full bg-gradient-to-r from-[#ff2a2a]/70 to-[#ff2a2a] rounded-full relative"
+                className="h-full bg-gradient-to-r from-[var(--theme-color)]/70 to-[var(--theme-color)] rounded-full relative"
               >
                 {/* Glow point */}
                 <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-1 bg-white rounded-full shadow-[0_0_8px_#ffffff]" />

@@ -19,11 +19,11 @@ const FaqPage = () => {
         {data.faqs.map((faq, idx) => (
           <details 
             key={idx} 
-            className="group p-6 rounded-3xl bg-zinc-900 border border-zinc-800 [&_summary::-webkit-details-marker]:hidden cursor-pointer hover:border-[#ff2a2a] transition-all"
+            className="group p-6 rounded-3xl bg-zinc-900 border border-zinc-800 [&_summary::-webkit-details-marker]:hidden cursor-pointer hover:border-[var(--theme-color)] transition-all"
           >
             <summary className="flex justify-between items-center text-base font-bold text-white outline-none">
               <span>{faq.question}</span>
-              <span className="p-1.5 bg-[#ff2a2a]/10 text-[#ff2a2a] rounded-lg group-open:rotate-180 transition-transform">
+              <span className="p-1.5 bg-[var(--theme-color)]/10 text-[var(--theme-color)] rounded-lg group-open:rotate-180 transition-transform">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                 </svg>

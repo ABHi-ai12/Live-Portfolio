@@ -21,7 +21,7 @@ const NotFoundPage = () => {
         </p>
         <Link 
           to="/"
-          className="w-full flex items-center justify-center py-3 rounded-full bg-[#ff2a2a] text-white font-bold hover:bg-white hover:text-[#ff2a2a] transition-all text-xs cursor-pointer"
+          className="w-full flex items-center justify-center py-3 rounded-full bg-[var(--theme-color)] text-white font-bold hover:bg-white hover:text-[var(--theme-color)] transition-all text-xs cursor-pointer"
         >
           Return to Home
         </Link>

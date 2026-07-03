@@ -72,6 +72,7 @@ export function useFirestoreDocument(cacheKey, docRefFactory, defaultData = {}) 
 
     try {
       const dRef = docRefFactoryRef.current();
+      console.log(`📡 [Admin Firestore] Setting up listener for: ${dRef.path} (cacheKey: ${cacheKey})`);
       unsubscribe = onSnapshot(
         dRef, 
         async (snapshot) => {
@@ -81,13 +82,15 @@ export function useFirestoreDocument(cacheKey, docRefFactory, defaultData = {}) 
           let docData;
           if (snapshot.exists()) {
             docData = snapshot.data();
+            console.log(`📥 [Admin Firestore] Received data for: ${dRef.path} (cacheKey: ${cacheKey})`, docData);
           } else {
-            console.log(`No data found for ${cacheKey}, initializing with defaults.`);
+            console.warn(`⚠️ [Admin Firestore] Document not found at: ${dRef.path}, initializing with default data.`);
             try {
               await setDoc(dRef, defaultData);
               docData = defaultData;
+              console.log(`✅ [Admin Firestore] Successfully initialized defaults at: ${dRef.path}`);
             } catch (err) {
-              console.error("Failed to initialize default doc data:", err);
+              console.error(`❌ [Admin Firestore] Failed to initialize default doc data at: ${dRef.path}`, err);
               docData = defaultData; // still show defaults locally
             }
           }
@@ -105,6 +108,7 @@ export function useFirestoreDocument(cacheKey, docRefFactory, defaultData = {}) 
           }
         }, 
         (err) => {
+          console.error(`❌ [Admin Firestore] Subscription error on: ${dRef.path}`, err);
           handleError(err);
         }
       );
@@ -114,7 +118,10 @@ export function useFirestoreDocument(cacheKey, docRefFactory, defaultData = {}) 
 
     return () => {
       isMounted = false;
-      if (unsubscribe) unsubscribe();
+      if (unsubscribe) {
+        console.log(`🔌 [Admin Firestore] Unsubscribing listener for: ${cacheKey}`);
+        unsubscribe();
+      }
       clearTimeout(timeoutId);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -130,7 +137,14 @@ export function useFirestoreDocument(cacheKey, docRefFactory, defaultData = {}) 
 
   const save = async (newData) => {
     const dRef = docRefFactoryRef.current();
-    await setDoc(dRef, newData, { merge: true });
+    console.log(`📤 [Admin Firestore] Writing document to: ${dRef.path}`, newData);
+    try {
+      await setDoc(dRef, newData, { merge: true });
+      console.log(`✅ [Admin Firestore] Successfully wrote document to: ${dRef.path}`);
+    } catch (err) {
+      console.error(`❌ [Admin Firestore] Failed to write document to: ${dRef.path}`, err);
+      throw err;
+    }
   };
 
   return { data, loading, error, isOffline, retry, save };

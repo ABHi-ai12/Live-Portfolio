@@ -18,8 +18,8 @@ const CertificationsPage = () => {
 
       <div className="max-w-6xl mx-auto px-6 md:px-12 mt-16 grid grid-cols-1 md:grid-cols-2 gap-6">
         {data.certifications.map((cert, idx) => (
-          <div key={idx} className="p-6 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-start gap-4 hover:border-[#ff2a2a] transition-all">
-            <div className="p-3 bg-[#ff2a2a]/10 rounded-xl text-[#ff2a2a] shrink-0">
+          <div key={idx} className="p-6 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-start gap-4 hover:border-[var(--theme-color)] transition-all">
+            <div className="p-3 bg-[var(--theme-color)]/10 rounded-xl text-[var(--theme-color)] shrink-0">
               <Award className="h-6 w-6" />
             </div>
             <div className="space-y-1">

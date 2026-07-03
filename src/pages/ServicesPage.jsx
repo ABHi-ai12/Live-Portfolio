@@ -26,9 +26,9 @@ const ServicesPage = () => {
         {data.services.map((srv, idx) => {
           const IconComp = iconMap[srv.icon] || HelpCircle;
           return (
-            <div key={idx} className="p-8 rounded-3xl bg-zinc-900 border border-zinc-800 space-y-6 flex flex-col justify-between hover:border-[#ff2a2a] transition-all">
+            <div key={idx} className="p-8 rounded-3xl bg-zinc-900 border border-zinc-800 space-y-6 flex flex-col justify-between hover:border-[var(--theme-color)] transition-all">
               <div className="space-y-4">
-                <div className="p-3 bg-[#ff2a2a]/10 rounded-2xl text-[#ff2a2a] w-fit">
+                <div className="p-3 bg-[var(--theme-color)]/10 rounded-2xl text-[var(--theme-color)] w-fit">
                   <IconComp className="h-6 w-6" />
                 </div>
                 <h3 className="text-xl font-bold text-white tracking-tight">{srv.title}</h3>
@@ -36,7 +36,7 @@ const ServicesPage = () => {
               </div>
               <div className="pt-4 border-t border-zinc-850 flex items-center justify-between text-[10px] font-mono text-zinc-500 uppercase tracking-widest">
                 <span>0{idx + 1} / SERVICE</span>
-                <span className="text-[#ff2a2a]">ACTIVE</span>
+                <span className="text-[var(--theme-color)]">ACTIVE</span>
               </div>
             </div>
           );

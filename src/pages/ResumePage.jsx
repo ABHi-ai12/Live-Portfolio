@@ -26,7 +26,7 @@ const ResumePage = () => {
         <div className="flex justify-end print:hidden">
           <button 
             onClick={handlePrint}
-            className="px-6 py-2.5 rounded-full bg-[#ff2a2a] text-white font-bold hover:bg-white hover:text-[#ff2a2a] transition-all duration-300 shadow-lg text-sm cursor-pointer"
+            className="px-6 py-2.5 rounded-full bg-[var(--theme-color)] text-white font-bold hover:bg-white hover:text-[var(--theme-color)] transition-all duration-300 shadow-lg text-sm cursor-pointer"
           >
             Print Resume
           </button>
@@ -38,7 +38,7 @@ const ResumePage = () => {
           <div className="border-b border-zinc-850 pb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 print:border-black print:pb-4">
             <div>
               <h1 className="text-4xl font-black tracking-tight print:text-black">{data.personal.name}</h1>
-              <p className="text-[#ff2a2a] font-mono tracking-widest text-xs uppercase font-bold mt-1 print:text-zinc-700">{data.personal.headline}</p>
+              <p className="text-[var(--theme-color)] font-mono tracking-widest text-xs uppercase font-bold mt-1 print:text-zinc-700">{data.personal.headline}</p>
             </div>
             <div className="text-xs font-mono text-zinc-450 space-y-1 text-left md:text-right print:text-black">
               <p>Email: {data.personal.email}</p>
@@ -49,13 +49,13 @@ const ResumePage = () => {
 
           {/* Profile About */}
           <div className="space-y-3">
-            <h2 className="text-sm font-mono tracking-[0.2em] uppercase text-[#ff2a2a] font-bold print:text-zinc-900">// Summary</h2>
+            <h2 className="text-sm font-mono tracking-[0.2em] uppercase text-[var(--theme-color)] font-bold print:text-zinc-900">// Summary</h2>
             <p className="text-sm text-zinc-350 leading-relaxed print:text-black">{data.personal.about}</p>
           </div>
 
           {/* Experience Grid */}
           <div className="space-y-6">
-            <h2 className="text-sm font-mono tracking-[0.2em] uppercase text-[#ff2a2a] font-bold print:text-zinc-900">// Work Experience</h2>
+            <h2 className="text-sm font-mono tracking-[0.2em] uppercase text-[var(--theme-color)] font-bold print:text-zinc-900">// Work Experience</h2>
             <div className="space-y-6">
               {data.experience.map((exp, idx) => (
                 <div key={idx} className="space-y-2 border-l border-zinc-800 pl-4 ml-1 print:border-black">
@@ -72,7 +72,7 @@ const ResumePage = () => {
 
           {/* Education Grid */}
           <div className="space-y-6">
-            <h2 className="text-sm font-mono tracking-[0.2em] uppercase text-[#ff2a2a] font-bold print:text-zinc-900">// Education</h2>
+            <h2 className="text-sm font-mono tracking-[0.2em] uppercase text-[var(--theme-color)] font-bold print:text-zinc-900">// Education</h2>
             <div className="space-y-6">
               {data.education.map((edu, idx) => (
                 <div key={idx} className="space-y-2 border-l border-zinc-800 pl-4 ml-1 print:border-black">
@@ -89,7 +89,7 @@ const ResumePage = () => {
 
           {/* Skills Tag List */}
           <div className="space-y-3">
-            <h2 className="text-sm font-mono tracking-[0.2em] uppercase text-[#ff2a2a] font-bold print:text-zinc-900">// Core Arsenal</h2>
+            <h2 className="text-sm font-mono tracking-[0.2em] uppercase text-[var(--theme-color)] font-bold print:text-zinc-900">// Core Arsenal</h2>
             <div className="flex flex-wrap gap-2">
               {data.skills.map((s, idx) => (
                 <span key={idx} className="px-2.5 py-1 rounded bg-zinc-800 text-zinc-300 text-xs font-mono border border-zinc-800 print:bg-zinc-100 print:text-black print:border-zinc-300">

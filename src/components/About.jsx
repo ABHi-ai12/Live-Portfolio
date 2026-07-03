@@ -15,7 +15,7 @@ const About = () => {
   }, []);
 
   return (
-    <section id="about" className="bg-[#ff2a2a] pt-20 pb-40 px-6 md:px-12 w-full relative overflow-hidden font-sans">
+    <section id="about" className="bg-[var(--theme-color)] pt-20 pb-40 px-6 md:px-12 w-full relative overflow-hidden font-sans">
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-16 items-start">
         
         {/* Left Side: ID Badge and Skills */}
@@ -36,7 +36,7 @@ const About = () => {
               {/* Image Container */}
               <div className="w-full aspect-[3/4] overflow-hidden rounded-xl bg-gray-800 border-2 border-transparent">
                 <img 
-                  src={stackImage} 
+                  src={(!data.personal.avatar || data.personal.avatar.startsWith('/src/')) ? stackImage : data.personal.avatar} 
                   alt={data.personal.name} 
                   className="w-full h-full object-cover"
                 />

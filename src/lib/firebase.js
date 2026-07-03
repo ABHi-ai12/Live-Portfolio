@@ -7,16 +7,22 @@ import { getFirestore } from 'firebase/firestore';
  * Reads from VITE_FIREBASE_* environment variables in .env.local.
  * Connects to Firestore for all portfolio data and contact messages.
  */
+const cleanEnv = (val) => typeof val === 'string' ? val.replace(/[\r\n\s]+/g, '').trim() : val;
+
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID
+  apiKey: cleanEnv(import.meta.env.VITE_FIREBASE_API_KEY),
+  authDomain: cleanEnv(import.meta.env.VITE_FIREBASE_AUTH_DOMAIN),
+  projectId: cleanEnv(import.meta.env.VITE_FIREBASE_PROJECT_ID),
+  storageBucket: cleanEnv(import.meta.env.VITE_FIREBASE_STORAGE_BUCKET),
+  messagingSenderId: cleanEnv(import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID),
+  appId: cleanEnv(import.meta.env.VITE_FIREBASE_APP_ID)
 };
 
-console.log("🔥 Initializing Firebase with project ID:", firebaseConfig.projectId);
+console.log("🔥 [Firebase Init] Initializing Firebase with config:", {
+  projectId: firebaseConfig.projectId,
+  hasApiKey: Boolean(firebaseConfig.apiKey),
+  apiKeyLength: firebaseConfig.apiKey ? firebaseConfig.apiKey.length : 0,
+});
 
 let app;
 let firestore;
@@ -24,9 +30,9 @@ let firestore;
 try {
   app = initializeApp(firebaseConfig);
   firestore = getFirestore(app);
-  console.log("✅ Firebase initialized successfully");
+  console.log("✅ [Firebase Init] Firebase initialized successfully for project:", firebaseConfig.projectId);
 } catch (error) {
-  console.error("❌ Error initializing Firebase:", error);
+  console.error("❌ [Firebase Init] Error initializing Firebase:", error);
 }
 
 export { firestore };

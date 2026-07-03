@@ -2,7 +2,7 @@ import React, { useRef, useMemo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-const Particles = ({ count = 80, color = '#ff2a2a' }) => {
+const Particles = ({ count = 80, color = 'var(--theme-color)' }) => {
   const mesh = useRef();
   const mouse = useRef({ x: 0, y: 0 });
 
@@ -56,7 +56,7 @@ const Particles = ({ count = 80, color = '#ff2a2a' }) => {
 
 const FloatingParticles = ({ 
   count = 80, 
-  color = '#ff2a2a', 
+  color = 'var(--theme-color)', 
   className = '',
   style = {} 
 }) => {

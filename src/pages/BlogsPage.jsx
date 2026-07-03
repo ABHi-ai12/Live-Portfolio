@@ -22,7 +22,7 @@ const BlogsPage = () => {
           <div className="space-y-6 bg-zinc-900 border border-zinc-800 p-8 md:p-12 rounded-3xl">
             <button 
               onClick={() => setSelectedBlog(null)}
-              className="text-xs font-mono text-[#ff2a2a] hover:underline flex items-center gap-1 uppercase font-bold cursor-pointer"
+              className="text-xs font-mono text-[var(--theme-color)] hover:underline flex items-center gap-1 uppercase font-bold cursor-pointer"
             >
               &larr; Back to Feed
             </button>
@@ -38,16 +38,16 @@ const BlogsPage = () => {
             {data.blogs.map((blog, idx) => (
               <div 
                 key={idx} 
-                className="p-8 rounded-3xl bg-zinc-900 border border-zinc-800 space-y-4 hover:border-[#ff2a2a] transition-all cursor-pointer"
+                className="p-8 rounded-3xl bg-zinc-900 border border-zinc-800 space-y-4 hover:border-[var(--theme-color)] transition-all cursor-pointer"
                 onClick={() => setSelectedBlog(blog)}
               >
                 <div className="flex justify-between items-center text-[10px] font-mono text-zinc-500 uppercase tracking-widest">
                   <span>{blog.date}</span>
                   <span>{blog.readTime}</span>
                 </div>
-                <h3 className="text-xl font-bold text-white group-hover:text-[#ff2a2a] transition-colors">{blog.title}</h3>
+                <h3 className="text-xl font-bold text-white group-hover:text-[var(--theme-color)] transition-colors">{blog.title}</h3>
                 <p className="text-sm text-zinc-400 leading-relaxed">{blog.excerpt}</p>
-                <span className="text-xs font-mono text-[#ff2a2a] uppercase font-bold tracking-wider hover:underline block pt-2">
+                <span className="text-xs font-mono text-[var(--theme-color)] uppercase font-bold tracking-wider hover:underline block pt-2">
                   Read Article &rarr;
                 </span>
               </div>

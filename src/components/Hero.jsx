@@ -62,11 +62,11 @@ const Hero = ({ title, subtitle, hideScrollIndicator }) => {
           >
             {title ? (
               <>
-                <span className="text-[#ff2a2a] font-light">//</span> {title}
+                <span className="text-[var(--theme-color)] font-light">//</span> {title}
               </>
             ) : (
               <>
-                Hi, I’m <span className="text-[#ff2a2a]">{data.personal.name}</span> <br /> 
+                Hi, I’m <span className="text-[var(--theme-color)]">{data.personal.name}</span> <br /> 
                 <span className="text-transparent [-webkit-text-stroke:1.5px_white]">{data.personal.headline}</span>
               </>
             )}
@@ -89,7 +89,7 @@ const Hero = ({ title, subtitle, hideScrollIndicator }) => {
               className="flex flex-row flex-wrap items-center gap-3 w-full"
             >
               {/* Primary Button */}
-              <Link to="/projects" className="px-5 py-2.5 text-xs md:text-sm rounded-full bg-white text-black font-bold hover:bg-[#ff2a2a] hover:text-white transition-all duration-300 transform hover:scale-105 shadow-md">
+              <Link to="/projects" className="px-5 py-2.5 text-xs md:text-sm rounded-full bg-white text-black font-bold hover:bg-[var(--theme-color)] hover:text-white transition-all duration-300 transform hover:scale-105 shadow-md">
                 View My Work
               </Link>
               
@@ -108,7 +108,7 @@ const Hero = ({ title, subtitle, hideScrollIndicator }) => {
           className="mt-8 md:mt-0 flex flex-row md:flex-col items-center gap-2 md:gap-3 cursor-pointer group self-start md:self-auto"
           onClick={toggleVideo}
         >
-          <div className="w-12 h-12 md:w-20 md:h-20 rounded-full border border-white/30 bg-black/20 backdrop-blur-md flex justify-center items-center group-hover:scale-110 group-hover:bg-[#ff2a2a] transition-all duration-500 shadow-[0_0_30px_rgba(255,255,255,0.1)] group-hover:shadow-[0_0_40px_rgba(255,42,42,0.6)]">
+          <div className="w-12 h-12 md:w-20 md:h-20 rounded-full border border-white/30 bg-black/20 backdrop-blur-md flex justify-center items-center group-hover:scale-110 group-hover:bg-[var(--theme-color)] transition-all duration-500 shadow-[0_0_30px_rgba(255,255,255,0.1)] group-hover:shadow-[0_0_40px_rgba(255,42,42,0.6)]">
             {!isPlaying || isMuted ? (
               // Play Icon
               <svg className="w-5 h-5 md:w-8 md:h-8 text-white ml-0.5 md:ml-1" fill="currentColor" viewBox="0 0 24 24">

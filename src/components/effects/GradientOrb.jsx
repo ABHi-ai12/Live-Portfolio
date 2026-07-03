@@ -2,7 +2,7 @@ import React from 'react';
 
 const GradientOrb = ({ 
   size = 400, 
-  color1 = '#ff2a2a', 
+  color1 = 'var(--theme-color)', 
   color2 = '#ff6b6b', 
   className = '',
   style = {}

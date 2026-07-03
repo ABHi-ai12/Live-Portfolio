@@ -19,7 +19,7 @@ const ExperiencePage = () => {
         <div className="space-y-12 border-l border-zinc-800 pl-8 ml-2">
           {data.experience.map((exp, idx) => (
             <div key={idx} className="relative space-y-2">
-              <div className="absolute -left-[37px] top-1.5 w-3 h-3 rounded-full bg-[#ff2a2a] shadow-[0_0_10px_#ff2a2a]" />
+              <div className="absolute -left-[37px] top-1.5 w-3 h-3 rounded-full bg-[var(--theme-color)] shadow-[0_0_10px_var(--theme-color)]" />
               <div className="flex justify-between items-baseline text-xs text-zinc-500 font-mono">
                 <span className="font-bold text-zinc-350">{exp.company}</span>
                 <span>{exp.duration}</span>

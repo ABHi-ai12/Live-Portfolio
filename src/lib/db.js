@@ -19,13 +19,21 @@ const commitUpdate = () => {
   cachedData = JSON.parse(JSON.stringify(currentCMSData));
   if (typeof window !== "undefined") {
     localStorage.setItem(DB_KEY, JSON.stringify(cachedData));
+    
+    // Inject Theme Color dynamically for Tailwind v4
+    if (currentCMSData.personal?.themeColor) {
+      document.documentElement.style.setProperty('--theme-color', currentCMSData.personal.themeColor);
+    }
+    
     window.dispatchEvent(new Event("portfolio_db_updated"));
   }
 };
 
 try {
   // 1. Home Content
+  console.log("📡 [Firestore Listener] Registering snapshot listener for: home/content");
   onSnapshot(doc(firestore, "home", "content"), (snapshot) => {
+    console.log("📥 [Firestore Update] Received snapshot for home/content");
     if (snapshot.exists()) {
       firebaseConnected = true;
       const d = snapshot.data();
@@ -41,14 +49,19 @@ try {
         twitter: d.twitter || currentCMSData.personal.twitter,
         email: d.email || currentCMSData.personal.email,
         phone: d.phone || currentCMSData.personal.phone,
-        themeColor: d.themeColor || "#ff2a2a"
+        themeColor: d.themeColor || "var(--theme-color)"
       };
+      console.log("➡️ [CMS Sync] Merged home content into local state:", { name: d.name, avatar: d.profileImage });
       commitUpdate();
+    } else {
+      console.warn("⚠️ [Firestore Update] home/content snapshot is empty!");
     }
   });
 
   // 2. About Content
+  console.log("📡 [Firestore Listener] Registering snapshot listener for: about/content");
   onSnapshot(doc(firestore, "about", "content"), (snapshot) => {
+    console.log("📥 [Firestore Update] Received snapshot for about/content");
     if (snapshot.exists()) {
       firebaseConnected = true;
       const d = snapshot.data();
@@ -59,12 +72,26 @@ try {
       
       currentCMSData.experience = d.experience || currentCMSData.experience;
       currentCMSData.education = d.education || currentCMSData.education;
+      currentCMSData.achievements = d.achievements || currentCMSData.achievements;
+      currentCMSData.certifications = d.certificates || d.certifications || currentCMSData.certifications;
+      
+      console.log("➡️ [CMS Sync] Merged about content:", {
+        biographyLen: d.biography?.length || 0,
+        experienceCount: d.experience?.length || 0,
+        educationCount: d.education?.length || 0,
+        achievementsCount: d.achievements?.length || 0,
+        certificatesCount: (d.certificates || d.certifications)?.length || 0
+      });
       commitUpdate();
+    } else {
+      console.warn("⚠️ [Firestore Update] about/content snapshot is empty!");
     }
   });
 
   // 3. Projects Content
+  console.log("📡 [Firestore Listener] Registering snapshot listener for: projects/content");
   onSnapshot(doc(firestore, "projects", "content"), (snapshot) => {
+    console.log("📥 [Firestore Update] Received snapshot for projects/content");
     if (snapshot.exists()) {
       firebaseConnected = true;
       const d = snapshot.data();
@@ -76,13 +103,18 @@ try {
           tech: p.tech ? p.tech.split(',').map(t=>t.trim()) : [],
           image: p.projectImage
         }));
+        console.log(`➡️ [CMS Sync] Merged ${currentCMSData.projects.length} projects.`);
         commitUpdate();
       }
+    } else {
+      console.warn("⚠️ [Firestore Update] projects/content snapshot is empty!");
     }
   });
 
   // 4. Skills Content
+  console.log("📡 [Firestore Listener] Registering snapshot listener for: skills/content");
   onSnapshot(doc(firestore, "skills", "content"), (snapshot) => {
+    console.log("📥 [Firestore Update] Received snapshot for skills/content");
     if (snapshot.exists()) {
       firebaseConnected = true;
       const d = snapshot.data();
@@ -92,13 +124,18 @@ try {
           level: s.percentage + '%',
           category: s.category
         }));
+        console.log(`➡️ [CMS Sync] Merged ${currentCMSData.skills.length} active skills.`);
         commitUpdate();
       }
+    } else {
+      console.warn("⚠️ [Firestore Update] skills/content snapshot is empty!");
     }
   });
 
   // 5. Contact Settings
+  console.log("📡 [Firestore Listener] Registering snapshot listener for: contact/settings");
   onSnapshot(doc(firestore, "contact", "settings"), (snapshot) => {
+    console.log("📥 [Firestore Update] Received snapshot for contact/settings");
     if (snapshot.exists()) {
       firebaseConnected = true;
       const d = snapshot.data();
@@ -114,31 +151,45 @@ try {
         availability: d.availabilityStatus,
         footerText: d.footerText
       };
+      console.log("➡️ [CMS Sync] Merged contact settings:", { email: d.email, phone: d.phone, address: d.address });
       commitUpdate();
+    } else {
+      console.warn("⚠️ [Firestore Update] contact/settings snapshot is empty!");
     }
   });
 
 } catch (e) {
-  console.warn("Firebase not configured, using local data:", e.message);
+  console.error("❌ [Firestore Error] Error setting up database listeners:", e);
 }
 
 export const db = {
   getData: () => {
-    if (cachedData) return cachedData;
+    let dataToReturn = cachedData;
     
-    if (typeof window === "undefined") return defaultData;
-    
-    const stored = localStorage.getItem(DB_KEY);
-    if (stored) {
-      try {
-        cachedData = JSON.parse(stored);
-        return cachedData;
-      } catch (e) {
-        console.error("Error parsing stored database:", e);
+    if (!dataToReturn) {
+      if (typeof window === "undefined") {
+        dataToReturn = defaultData;
+      } else {
+        const stored = localStorage.getItem(DB_KEY);
+        if (stored) {
+          try {
+            dataToReturn = JSON.parse(stored);
+          } catch (e) {
+            console.error("Error parsing stored database:", e);
+            dataToReturn = defaultData;
+          }
+        } else {
+          dataToReturn = defaultData;
+        }
       }
+      cachedData = dataToReturn;
     }
     
-    return defaultData;
+    if (typeof window !== "undefined" && dataToReturn.personal?.themeColor) {
+      document.documentElement.style.setProperty('--theme-color', dataToReturn.personal.themeColor);
+    }
+    
+    return dataToReturn;
   },
 
   isFirebaseConnected: () => firebaseConnected,

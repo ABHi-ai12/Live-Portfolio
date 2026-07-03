@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useFirestoreDocument } from '../hooks/useFirestoreDocument';
-import { useStorage } from '../hooks/useStorage';
+
 import { doc } from 'firebase/firestore';
 import { firestore } from '../lib/firebase';
 import { Plus, Trash2, Save, Loader2, GripVertical, UploadCloud, Image as ImageIcon, FolderKanban } from 'lucide-react';
@@ -16,7 +16,6 @@ export default function ProjectsPage() {
     defaultProjectData
   );
   
-  const { uploadFile, uploading } = useStorage();
   const [items, setItems] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -26,20 +25,6 @@ export default function ProjectsPage() {
       setItems(data.items);
     }
   }, [data]);
-
-  const handleFileUpload = async (e, id, field) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    try {
-      const path = `projects/${field}_${Date.now()}_${file.name}`;
-      const url = await uploadFile(file, path);
-      updateItem(id, field, url);
-    } catch (err) {
-      console.error(`Error uploading ${field}:`, err);
-      alert(`Failed to upload ${field}.`);
-    }
-  };
 
   const addItem = () => {
     const newItem = {
@@ -103,7 +88,7 @@ export default function ProjectsPage() {
           </button>
           <button
             onClick={handleSubmit}
-            disabled={isSaving || uploading}
+            disabled={isSaving}
             className="flex items-center gap-2 px-4 py-2 bg-white text-black rounded-lg font-medium hover:bg-zinc-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
@@ -139,24 +124,29 @@ export default function ProjectsPage() {
 
             <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6">
               
-              {/* Media Upload */}
-              <div className="md:col-span-2 flex items-center justify-between border-b border-zinc-800 pb-4">
-                <div className="flex items-center gap-4">
-                  {item.projectImage ? (
-                    <img src={item.projectImage} alt="Project" className="w-24 h-16 rounded-lg object-cover border-2 border-zinc-700" />
+              {/* Project Image URL Input */}
+              <div className="md:col-span-2 flex items-center justify-between border-b border-zinc-800 pb-4 gap-4">
+                <div className="flex-1 flex items-center gap-4">
+                  {item.projectImage && !item.projectImage.startsWith('/src/') ? (
+                    <img src={item.projectImage} alt="Project" className="w-24 h-16 rounded-lg object-cover border-2 border-zinc-700 shrink-0" />
                   ) : (
-                    <div className="w-24 h-16 rounded-lg bg-zinc-800 flex items-center justify-center border-2 border-zinc-700 border-dashed">
+                    <div className="w-24 h-16 rounded-lg bg-zinc-800 flex items-center justify-center border-2 border-zinc-700 border-dashed shrink-0">
                       <ImageIcon className="w-6 h-6 text-zinc-500" />
                     </div>
                   )}
-                  <label className="cursor-pointer px-3 py-1.5 bg-zinc-800 text-xs font-medium rounded-lg hover:bg-zinc-700 transition-colors flex items-center gap-2">
-                    <UploadCloud className="w-4 h-4" />
-                    Upload Image
-                    <input type="file" accept="image/*" className="hidden" onChange={(e) => handleFileUpload(e, item.id, 'projectImage')} />
-                  </label>
+                  <div className="flex-1">
+                    <label className="block text-xs font-medium text-zinc-500 mb-1">Project Image URL</label>
+                    <input
+                      type="text"
+                      value={item.projectImage || ''}
+                      onChange={(e) => updateItem(item.id, 'projectImage', e.target.value)}
+                      className="w-full bg-black border border-zinc-800 rounded-lg px-3 py-2 text-white text-sm focus:border-red-500 transition-colors"
+                      placeholder="https://..."
+                    />
+                  </div>
                 </div>
 
-                <button type="button" onClick={() => removeItem(item.id)} className="p-2 text-zinc-500 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors">
+                <button type="button" onClick={() => removeItem(item.id)} className="p-2 text-zinc-500 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors shrink-0">
                   <Trash2 className="w-5 h-5" />
                 </button>
               </div>

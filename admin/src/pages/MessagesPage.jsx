@@ -184,12 +184,9 @@ export default function MessagesPage() {
                     {msg.name}
                   </h3>
                   <span className="text-zinc-600 hidden sm:inline">|</span>
-                  <a 
-                    href={`mailto:${msg.email}`} 
-                    className="text-red-400 hover:text-red-300 text-sm font-medium hover:underline transition-colors"
-                  >
+                  <span className="text-red-400 text-sm font-medium">
                     {msg.email}
-                  </a>
+                  </span>
                   {msg.phone && (
                     <>
                       <span className="text-zinc-600 hidden sm:inline">|</span>
@@ -235,16 +232,15 @@ export default function MessagesPage() {
               
               <div className="flex w-full gap-2 lg:flex-col">
                 {/* Reply */}
-                <a 
-                  href={`mailto:${msg.email}?subject=Re: ${msg.subject || 'Your Contact Message'}`}
+                <button 
                   onClick={() => {
-                    if (msg.status !== 'Replied') updateStatus(msg.id, 'Replied');
+                    alert('Please reply from the main Inbox tab inside Contact.');
                   }}
-                  className="flex-1 lg:w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition-colors"
+                  className="flex-1 lg:w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition-colors cursor-pointer"
                 >
                   <Reply className="w-3.5 h-3.5" />
                   Reply
-                </a>
+                </button>
 
                 {/* Mark Read/Unread */}
                 <button 

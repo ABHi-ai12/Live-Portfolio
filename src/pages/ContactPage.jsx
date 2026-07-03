@@ -276,7 +276,7 @@ const ContactPage = () => {
 
         {/* FloatingParticles */}
         <Suspense fallback={null}>
-          <FloatingParticles count={40} color="#ff2a2a" className="opacity-10" />
+          <FloatingParticles count={40} color="var(--theme-color)" className="opacity-10" />
         </Suspense>
 
         {/* Huge parallax Background Text – shimmer gradient */}
@@ -306,7 +306,7 @@ const ContactPage = () => {
         <div className="relative z-10 w-full max-w-6xl mx-auto px-6 md:px-12 mt-12 flex justify-end">
           <div 
             data-aos="fade-up"
-            className="bg-[#ff2a2a] w-full lg:w-[85%] p-8 md:p-16 text-white flex flex-col justify-between rounded-3xl shadow-[0_30px_60px_rgba(255,42,42,0.15)]"
+            className="bg-[var(--theme-color)] w-full lg:w-[85%] p-8 md:p-16 text-white flex flex-col justify-between rounded-3xl shadow-[0_30px_60px_rgba(255,42,42,0.15)]"
           >
             <SplitTextReveal
               text="Reach Us"
@@ -431,7 +431,7 @@ const ContactPage = () => {
                       <button 
                         type="submit" 
                         disabled={isSubmitting}
-                        className="px-8 py-3 rounded-full border border-white/40 text-white font-bold flex items-center justify-center gap-3 hover:bg-white hover:text-[#ff2a2a] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 group whitespace-nowrap self-start sm:self-auto"
+                        className="px-8 py-3 rounded-full border border-white/40 text-white font-bold flex items-center justify-center gap-3 hover:bg-white hover:text-[var(--theme-color)] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 group whitespace-nowrap self-start sm:self-auto"
                       >
                         {isSubmitting ? 'Sending...' : 'Send'}
                         <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">

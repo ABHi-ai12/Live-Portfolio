@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useFirestoreDocument } from '../hooks/useFirestoreDocument';
-import { useStorage } from '../hooks/useStorage';
+
 import { doc } from 'firebase/firestore';
 import { firestore } from '../lib/firebase';
 import { Loader2, Save, Image as ImageIcon, UploadCloud, User } from 'lucide-react';
@@ -32,7 +32,6 @@ export default function HomePage() {
     defaultHomeData
   );
   
-  const { uploadFile, uploading } = useStorage();
   const [formData, setFormData] = useState(defaultHomeData);
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -46,20 +45,6 @@ export default function HomePage() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleFileUpload = async (e, field) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    try {
-      const path = `home/${field}_${Date.now()}_${file.name}`;
-      const url = await uploadFile(file, path);
-      setFormData(prev => ({ ...prev, [field]: url }));
-    } catch (err) {
-      console.error(`Error uploading ${field}:`, err);
-      alert(`Failed to upload ${field}.`);
-    }
   };
 
   const handleSubmit = async (e) => {
@@ -92,7 +77,7 @@ export default function HomePage() {
         </div>
         <button
           onClick={handleSubmit}
-          disabled={isSaving || uploading}
+          disabled={isSaving}
           className="flex items-center gap-2 px-4 py-2 bg-white text-black rounded-lg font-medium hover:bg-zinc-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
@@ -114,40 +99,32 @@ export default function HomePage() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-zinc-400 mb-2">Profile Image</label>
-              <div className="flex items-center gap-4">
-                {formData.profileImage ? (
-                  <img src={formData.profileImage} alt="Profile" className="w-16 h-16 rounded-full object-cover border-2 border-zinc-700" />
-                ) : (
-                  <div className="w-16 h-16 rounded-full bg-zinc-800 flex items-center justify-center border-2 border-zinc-700 border-dashed">
-                    <User className="w-6 h-6 text-zinc-500" />
-                  </div>
+              <label className="block text-sm font-medium text-zinc-400 mb-2">Profile Image URL</label>
+              <div className="space-y-4">
+                <input
+                  type="text"
+                  name="profileImage"
+                  value={formData.profileImage}
+                  onChange={handleChange}
+                  className="w-full bg-black border border-zinc-800 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-red-500 transition-colors"
+                  placeholder="https://..."
+                />
+                {formData.profileImage && !formData.profileImage.startsWith('/src/') && (
+                  <img src={formData.profileImage} alt="Profile Preview" className="w-16 h-16 rounded-full object-cover border-2 border-zinc-700" />
                 )}
-                <label className="cursor-pointer px-4 py-2 bg-zinc-800 text-sm font-medium rounded-lg hover:bg-zinc-700 transition-colors flex items-center gap-2">
-                  <UploadCloud className="w-4 h-4" />
-                  Upload Image
-                  <input type="file" accept="image/*" className="hidden" onChange={(e) => handleFileUpload(e, 'profileImage')} />
-                </label>
               </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-zinc-400 mb-2">Hero Background (Image/Video URL)</label>
-              <div className="flex items-center gap-4">
-                <input
-                  type="text"
-                  name="heroBackground"
-                  value={formData.heroBackground}
-                  onChange={handleChange}
-                  className="flex-1 bg-black border border-zinc-800 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-red-500 transition-colors"
-                  placeholder="https://..."
-                />
-                <label className="cursor-pointer px-4 py-2 bg-zinc-800 text-sm font-medium rounded-lg hover:bg-zinc-700 transition-colors flex items-center gap-2 shrink-0">
-                  <UploadCloud className="w-4 h-4" />
-                  Upload
-                  <input type="file" accept="image/*,video/*" className="hidden" onChange={(e) => handleFileUpload(e, 'heroBackground')} />
-                </label>
-              </div>
+              <input
+                type="text"
+                name="heroBackground"
+                value={formData.heroBackground}
+                onChange={handleChange}
+                className="w-full bg-black border border-zinc-800 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-red-500 transition-colors"
+                placeholder="https://..."
+              />
             </div>
           </div>
         </section>

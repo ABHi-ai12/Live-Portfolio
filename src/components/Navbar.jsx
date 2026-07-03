@@ -47,7 +47,7 @@ const Navbar = () => {
             to="/"
             className="text-white text-xl font-black tracking-tight select-none"
           >
-            Abhinav<span className="text-[#ff2a2a]">.</span>
+            Abhinav<span className="text-[var(--theme-color)]">.</span>
           </Link>
 
           {/* Desktop links */}
@@ -60,7 +60,7 @@ const Navbar = () => {
                     to={path}
                     className={`px-4 py-2 rounded-full text-[13px] font-semibold transition-all duration-200 ${
                       active
-                        ? 'bg-[#ff2a2a] text-white shadow-[0_0_16px_rgba(255,42,42,0.35)]'
+                        ? 'bg-[var(--theme-color)] text-white shadow-[0_0_16px_rgba(255,42,42,0.35)]'
                         : 'text-zinc-400 hover:text-white hover:bg-white/5'
                     }`}
                   >
@@ -96,7 +96,7 @@ const Navbar = () => {
                     to={path}
                     className={`block px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${
                       active
-                        ? 'bg-[#ff2a2a] text-white'
+                        ? 'bg-[var(--theme-color)] text-white'
                         : 'text-zinc-400 hover:text-white hover:bg-white/5'
                     }`}
                   >

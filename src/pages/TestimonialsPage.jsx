@@ -23,7 +23,7 @@ const TestimonialsPage = () => {
               "{test.text}"
             </p>
             <div className="border-t border-zinc-850 pt-4 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-[#ff2a2a]/20 border border-[#ff2a2a]/30 flex items-center justify-center font-bold text-xs text-[#ff2a2a] uppercase">
+              <div className="w-10 h-10 rounded-full bg-[var(--theme-color)]/20 border border-[var(--theme-color)]/30 flex items-center justify-center font-bold text-xs text-[var(--theme-color)] uppercase">
                 {test.name.slice(0, 2)}
               </div>
               <div>

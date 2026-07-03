@@ -18,11 +18,11 @@ const AchievementsPage = () => {
 
       <div className="max-w-4xl mx-auto px-6 md:px-12 mt-16 space-y-6">
         {data.achievements.map((ach, idx) => (
-          <div key={idx} className="p-8 rounded-3xl bg-zinc-900 border border-zinc-800 space-y-3 relative overflow-hidden group hover:border-[#ff2a2a] transition-all duration-300">
-            <div className="absolute top-0 right-0 p-8 text-zinc-800/10 group-hover:text-[#ff2a2a]/10 transition-colors pointer-events-none">
+          <div key={idx} className="p-8 rounded-3xl bg-zinc-900 border border-zinc-800 space-y-3 relative overflow-hidden group hover:border-[var(--theme-color)] transition-all duration-300">
+            <div className="absolute top-0 right-0 p-8 text-zinc-800/10 group-hover:text-[var(--theme-color)]/10 transition-colors pointer-events-none">
               <Award className="w-24 h-24" />
             </div>
-            <span className="text-[10px] font-mono text-[#ff2a2a] tracking-widest uppercase font-bold">// {ach.date}</span>
+            <span className="text-[10px] font-mono text-[var(--theme-color)] tracking-widest uppercase font-bold">// {ach.date}</span>
             <h3 className="text-xl font-black text-white">{ach.title}</h3>
             <p className="text-sm text-zinc-400 max-w-2xl leading-relaxed">{ach.description}</p>
           </div>

@@ -73,7 +73,7 @@ const ProjectsPage = () => {
                 onClick={() => setActiveFilter(filter)}
                 className={`px-5 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all duration-300 cursor-pointer ${
                   activeFilter === filter
-                    ? 'bg-[#ff2a2a] text-white shadow-[0_0_15px_rgba(255,42,42,0.25)]'
+                    ? 'bg-[var(--theme-color)] text-white shadow-[0_0_15px_rgba(255,42,42,0.25)]'
                     : 'text-zinc-400 hover:text-white hover:bg-zinc-800/40'
                 }`}
               >
@@ -115,15 +115,15 @@ const ProjectsPage = () => {
       <section className="bg-black py-20 px-6 md:px-12 w-full border-b border-zinc-900">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
           <div className="space-y-1.5 p-6 rounded-2xl bg-zinc-950 border border-zinc-900">
-            <span className="block text-2xl font-mono font-black text-[#ff2a2a]">100%</span>
+            <span className="block text-2xl font-mono font-black text-[var(--theme-color)]">100%</span>
             <p className="text-xs uppercase tracking-wider text-zinc-400 font-bold">// Git Test Coverage</p>
           </div>
           <div className="space-y-1.5 p-6 rounded-2xl bg-zinc-950 border border-zinc-900">
-            <span className="block text-2xl font-mono font-black text-[#ff2a2a]">MODULAR</span>
+            <span className="block text-2xl font-mono font-black text-[var(--theme-color)]">MODULAR</span>
             <p className="text-xs uppercase tracking-wider text-zinc-400 font-bold">// Architecture Design</p>
           </div>
           <div className="space-y-1.5 p-6 rounded-2xl bg-zinc-950 border border-zinc-900">
-            <span className="block text-2xl font-mono font-black text-[#ff2a2a]">SECURE</span>
+            <span className="block text-2xl font-mono font-black text-[var(--theme-color)]">SECURE</span>
             <p className="text-xs uppercase tracking-wider text-zinc-400 font-bold">// Standard Compliance</p>
           </div>
         </div>
@@ -175,11 +175,11 @@ const ProjectCard = ({ project, index }) => {
       className="p-6 md:p-8 rounded-[2rem] bg-zinc-900/30 backdrop-blur-xl border border-zinc-800/80 shadow-2xl relative overflow-hidden group hover:border-zinc-700 transition-all duration-500 hover:shadow-[0_20px_50px_rgba(255,42,42,0.04)] flex flex-col justify-between min-h-[300px]"
     >
       {/* Top glowing bar */}
-      <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-[#ff2a2a]/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-[var(--theme-color)]/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       
       <div className="space-y-5">
         <div className="flex justify-between items-center border-b border-zinc-800 pb-4">
-          <span className="text-xs font-mono text-[#ff2a2a] font-bold tracking-widest">// 0{index + 1}</span>
+          <span className="text-xs font-mono text-[var(--theme-color)] font-bold tracking-widest">// 0{index + 1}</span>
           <div className="flex gap-2">
             {project.link && (
               <MagneticButton strength={0.25}>
@@ -200,7 +200,7 @@ const ProjectCard = ({ project, index }) => {
                 href={project.link || "#"}
                 target="_blank"
                 rel="noreferrer"
-                className="p-2 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-400 hover:text-[#ff2a2a] hover:border-zinc-700 transition-colors cursor-pointer"
+                className="p-2 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-400 hover:text-[var(--theme-color)] hover:border-zinc-700 transition-colors cursor-pointer"
               >
                 <ExternalLink className="w-4 h-4" />
               </a>
@@ -209,7 +209,7 @@ const ProjectCard = ({ project, index }) => {
         </div>
 
         <div className="space-y-2">
-          <h3 className="text-xl font-black text-white group-hover:text-[#ff2a2a] transition-colors leading-tight">
+          <h3 className="text-xl font-black text-white group-hover:text-[var(--theme-color)] transition-colors leading-tight">
             {project.title}
           </h3>
           <p className="text-zinc-400 text-sm leading-relaxed font-medium">

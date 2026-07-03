@@ -52,17 +52,17 @@ const AboutPage = () => {
 
   const coreValues = [
     {
-      icon: <Zap className="w-6 h-6 text-[#ff2a2a]" />,
+      icon: <Zap className="w-6 h-6 text-[var(--theme-color)]" />,
       title: "Performance First",
       desc: "Optimized architectures, fast load times, and lightweight bundles for premium user experience."
     },
     {
-      icon: <Cpu className="w-6 h-6 text-[#ff2a2a]" />,
+      icon: <Cpu className="w-6 h-6 text-[var(--theme-color)]" />,
       title: "Scalable Systems",
       desc: "Modular codebase patterns, microservices architecture, and clean design patterns ready for growth."
     },
     {
-      icon: <Shield className="w-6 h-6 text-[#ff2a2a]" />,
+      icon: <Shield className="w-6 h-6 text-[var(--theme-color)]" />,
       title: "Secure & Reliable",
       desc: "Adhering to strict security practices, route guards, robust session logic, and secure databases."
     }
@@ -113,7 +113,7 @@ const AboutPage = () => {
               {/* Image Container with holographic overlay */}
               <div className="w-full aspect-[4/5] overflow-hidden rounded-2xl bg-zinc-950 border border-zinc-800 relative">
                 <img 
-                  src={stackImage} 
+                  src={(!data.personal.avatar || data.personal.avatar.startsWith('/src/')) ? stackImage : data.personal.avatar} 
                   alt={data.personal.name} 
                   className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
                 />
@@ -123,7 +123,7 @@ const AboutPage = () => {
               </div>
 
               <div className="mt-6 text-center space-y-1">
-                <h3 className="font-heading font-black text-md tracking-wider uppercase text-white group-hover:text-[#ff2a2a] transition-colors">{data.personal.name}</h3>
+                <h3 className="font-heading font-black text-md tracking-wider uppercase text-white group-hover:text-[var(--theme-color)] transition-colors">{data.personal.name}</h3>
                 <p className="text-[10px] text-zinc-400 font-mono tracking-widest uppercase">{data.personal.headline}</p>
               </div>
             </motion.div>
@@ -134,7 +134,7 @@ const AboutPage = () => {
             <GradientOrb size={500} color1="#000000" color2="#330000" className="-top-20 -right-20 opacity-30" />
 
             <div className="space-y-3">
-              <span className="text-xs font-mono uppercase tracking-[0.2em] text-[#ff2a2a] font-bold">
+              <span className="text-xs font-mono uppercase tracking-[0.2em] text-[var(--theme-color)] font-bold">
                 // Developer Persona
               </span>
               <h2 className="text-3xl md:text-5xl font-black text-white leading-tight">
@@ -149,15 +149,15 @@ const AboutPage = () => {
             {/* Quick Metrics Grid */}
             <div className="grid grid-cols-3 gap-4 max-w-md pt-4">
               <div className="bg-zinc-900/40 border border-zinc-800/80 p-5 rounded-2xl text-center space-y-1 backdrop-blur-md">
-                <AnimatedCounter target={5} suffix="+" className="block text-2xl md:text-3xl font-black text-[#ff2a2a]" />
+                <AnimatedCounter target={5} suffix="+" className="block text-2xl md:text-3xl font-black text-[var(--theme-color)]" />
                 <span className="block text-[9px] font-mono tracking-wider text-zinc-400 uppercase">Years Exp.</span>
               </div>
               <div className="bg-zinc-900/40 border border-zinc-800/80 p-5 rounded-2xl text-center space-y-1 backdrop-blur-md">
-                <AnimatedCounter target={15} suffix="+" className="block text-2xl md:text-3xl font-black text-[#ff2a2a]" />
+                <AnimatedCounter target={15} suffix="+" className="block text-2xl md:text-3xl font-black text-[var(--theme-color)]" />
                 <span className="block text-[9px] font-mono tracking-wider text-zinc-400 uppercase">Projects</span>
               </div>
               <div className="bg-zinc-900/40 border border-zinc-800/80 p-5 rounded-2xl text-center space-y-1 backdrop-blur-md">
-                <AnimatedCounter target={100} suffix="%" className="block text-2xl md:text-3xl font-black text-[#ff2a2a]" />
+                <AnimatedCounter target={100} suffix="%" className="block text-2xl md:text-3xl font-black text-[var(--theme-color)]" />
                 <span className="block text-[9px] font-mono tracking-wider text-zinc-400 uppercase">Success</span>
               </div>
             </div>
@@ -183,7 +183,7 @@ const AboutPage = () => {
                   </div>
                   <div className="min-w-0">
                     <span className="text-[9px] font-mono text-zinc-500 tracking-widest uppercase font-bold">// Email</span>
-                    <a href={`mailto:${data.personal.email}`} className="text-sm font-bold text-white hover:text-[#ff2a2a] transition-colors block truncate">{data.personal.email}</a>
+                    <a href={`mailto:${data.personal.email}`} className="text-sm font-bold text-white hover:text-[var(--theme-color)] transition-colors block truncate">{data.personal.email}</a>
                   </div>
                 </div>
               </MagneticButton>
@@ -196,7 +196,7 @@ const AboutPage = () => {
       <section className="bg-black py-24 px-6 md:px-12 w-full relative overflow-hidden border-b border-zinc-900">
         <div className="max-w-6xl mx-auto space-y-12">
           <div className="text-center space-y-3">
-            <span className="text-xs font-mono uppercase tracking-[0.2em] text-[#ff2a2a] font-bold">
+            <span className="text-xs font-mono uppercase tracking-[0.2em] text-[var(--theme-color)] font-bold">
               // Coding Ideals
             </span>
             <h2 className="text-2xl md:text-4xl font-black text-white uppercase tracking-tight">
@@ -226,7 +226,7 @@ const AboutPage = () => {
       {/* 4. Capabilities Scrolling Banner */}
       <section className="bg-zinc-950 py-16 w-full overflow-hidden border-b border-zinc-900">
         <div className="max-w-6xl mx-auto px-6 md:px-12 mb-4 flex items-center gap-2">
-          <Sparkles className="text-[#ff2a2a] w-4 h-4" />
+          <Sparkles className="text-[var(--theme-color)] w-4 h-4" />
           <h4 className="text-[10px] font-mono tracking-[0.25em] uppercase text-zinc-400 font-bold">
             Core Capabilities & Tech
           </h4>

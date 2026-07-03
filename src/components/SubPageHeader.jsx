@@ -9,7 +9,7 @@ const SubPageHeader = ({ title, subtitle }) => {
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
       
       {/* Floating radial gradient glow orb */}
-      <div className="absolute -top-24 -right-24 w-96 h-96 bg-[#ff2a2a]/10 rounded-full blur-[100px] pointer-events-none animate-pulse" style={{ animationDuration: '6s' }} />
+      <div className="absolute -top-24 -right-24 w-96 h-96 bg-[var(--theme-color)]/10 rounded-full blur-[100px] pointer-events-none animate-pulse" style={{ animationDuration: '6s' }} />
       <div className="absolute -bottom-24 -left-24 w-80 h-80 bg-zinc-900/50 rounded-full blur-[80px] pointer-events-none" />
 
       {/* Huge Background Watermark with entrance animation */}
@@ -46,9 +46,9 @@ const SubPageHeader = ({ title, subtitle }) => {
           }}
           className="flex items-center gap-2 text-xs font-mono tracking-[0.2em] text-zinc-500 uppercase"
         >
-          <Link to="/" className="hover:text-[#ff2a2a] transition-colors">Home</Link>
+          <Link to="/" className="hover:text-[var(--theme-color)] transition-colors">Home</Link>
           <span>/</span>
-          <span className="text-[#ff2a2a] font-bold">{title}</span>
+          <span className="text-[var(--theme-color)] font-bold">{title}</span>
         </motion.div>
 
         {/* Title */}
@@ -59,7 +59,7 @@ const SubPageHeader = ({ title, subtitle }) => {
           }}
           className="text-4xl md:text-7xl font-black text-white uppercase tracking-tight flex items-center gap-4"
         >
-          <span className="text-[#ff2a2a] font-light">//</span> {title}
+          <span className="text-[var(--theme-color)] font-light">//</span> {title}
         </motion.h1>
 
         {/* Subtitle */}
@@ -77,7 +77,7 @@ const SubPageHeader = ({ title, subtitle }) => {
       </motion.div>
 
       {/* Bottom glowing accent line */}
-      <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#ff2a2a]/30 to-transparent" />
+      <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[var(--theme-color)]/30 to-transparent" />
     </div>
   );
 };
